@@ -1,0 +1,57 @@
+виртуальная память,
+физическая память,
+считывание параметров
+
+#include "pch.h"
+#include "CppUnitTest.h"
+
+#pragma once
+#ifdef _WIN64
+#pragma comment(lib, "../x64/debug/OS10_HTAPI.lib")
+#else
+#pragma comment(lib, "../debug/OS10_HTAPI.lib")
+#endif
+
+#include "../OS10_HTAPI/pch.h"
+#include "../OS10_HTAPI/HT.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace UnitTest
+{
+	TEST_CLASS(UnitTest)
+	{
+	public:
+		
+		TEST_METHOD(CreateTest)
+		{
+			ht::HtHandle* htt = ht::create(1000, 3, 10, 256, L"./HtSpace.ht");
+			
+				ht::Element* insertEl = new ht::Element("test1", 6, "test1", 6);
+				ht::insert(htt, insertEl);
+				ht::Element* getEl = ht::get(htt, new ht::Element("test1", 6));
+				std::cout << getEl << std::endl;
+			Assert::IsFalse(
+					getEl == NULL ||
+					insertEl->keyLength != getEl->keyLength ||
+					memcmp(insertEl->key, getEl->key, insertEl->keyLength) != NULL ||
+					insertEl->payloadLength != getEl->payloadLength ||
+					memcmp(insertEl->payload, getEl->payload, insertEl->payloadLength) != NULL
+			);
+			ht::close(htt);
+
+		};
+
+	};
+}
+
+pch.h
+#ifndef PCH_H
+#define PCH_H
+
+// Добавьте сюда заголовочные файлы для предварительной компиляции
+
+#include<iostream>
+#include<Windows.h>
+#endif //PCH_H
+pch.cpp
+#include "pch.h"
